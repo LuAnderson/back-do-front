@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br" ng-app="simulado">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Back do Front     - MedGrupo</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="js/lib/angular.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/controllers/home-controller.js"></script>
+    <script src="js/controllers/lista-controller.js"></script>
+    <script src="js/controllers/filtro-controller.js"></script>
+    <script src="js/controllers/resultado-controller.js"></script>
+
+</head>
+
+<body id="allBody" ng-controller="HomeController">
+
+    <section id="titulo" class="row">
+        <div class="container col-sm-12">
+            <h1 class="text-center">{{projeto.nome}}</h1>
+        </div>
+    </section>
+
+    <section class="row">
+        <div class="container col-sm-1"></div>
+        <div class="container col-sm-1">
+            <button onclick="adicionaZoom()" id="zoom" class="btn btn-xs">A+</button>
+            <button onclick="removeZoom()" id="zoom" class="btn btn-xs">A-</button>
+        </div>
+        <div class="container col-sm-10"></div>
+    </section>
+
+    <section id="informativo" class="row">
+        <div class="col-sm-1"></div>
+
+        <div class="container col-sm-3" ng-controller="ListaController">
+            <h2>{{lista.titulo}}</h2>
+            <ul>
+                <li ng-repeat="opcao in opcoes">
+                    {{opcao.titulo}}
+                </li>
+            </ul>
+            <ul>
+                <li ng-repeat="subopcao in subopcoes">{{subopcao.subtitulo}}</li>
+            </ul>
+        </div>
+        <div class="container col-sm-6 texto-resumo">
+            <h2>SIMULADO 5 - PROVA OBJETIVA</h2>
+            <p>
+                Os resultados do simulado são atualizados diariamente, na medida em que os cartões-resposta e as provas discursivas vão sendo
+                são processados.
+            </p>
+            <p>
+                Através dos filtros, você poderá criar rankings personalizados, por ESPECIALIDADE, TURMA(Curso) e UNIDADE (Cidade).
+            </p>
+            <form class="menuBusca jumbotron jumbotron-fluid">
+                <p>
+                    <label for="matricula">Encontre com sua matricula:</label>
+                    <input ng-model="filtroImput" type="text" name="buscaMatricula" value="">
+                    <button class="btn btn-default btn-small">procurar</button>
+                </p>
+            </form>
+            <div>
+                <p>
+                    Filtrar por:
+                </p>
+                <div class="seletores" ng-controller="FiltroController">
+                    <select>
+                        <option ng-repeat="especialidade in especialidades" value="{{especialidade.value}}">{{especialidade.especialidade}}</option>
+                    </select>
+                    <select>
+                        <option ng-repeat="filial in filiais" value="{{filiais.value}}">{{filial.filial}}</option>
+                    </select>
+                    <select>
+                        <option ng-repeat="turma in turmas" value="{{turmas.value}}">{{turma.turma}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2"></div>
+    </section>
+
+    <section id="opcoes-tabela" class="row">
+        <div class="col-sm-1"></div>
+
+        <div class="col-sm-3 compartilhamento">
+            <a onclick="imprimirTabela()">imprimir</a>
+            <p>|</p>
+            <a href="#img1">enviar para um amigo</a>
+
+            <a href="#_" class="lightbox" id="img1">
+                <p>
+                    Hello World
+                </p>
+            </a>
+        </div>
+        <div class="col-sm-4"></div>
+        <div class="col-sm-3" ng-controller="ResultadoController">
+            foram encontrados {{tabela.length}} registos
+        </div>
+
+        <div class="col-sm-1"></div>
+    </section>
+
+    <section class="row">
+        <div class="col-sm-1"></div>
+
+        <div class="col-sm-10" ng-controller="ResultadoController">
+            <form class="menu-tabela jumbotron jumbotron-fluid ng-pristine ng-valid">
+                {{paginaAtual}} ao {{quantidadePaginas}}
+                <button type="button" class="btn btn-default btn-sm" id="less" ng-click="loadLessPage()">
+                    <span class="glyphicon glyphicon-triangle-left"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" id="more" ng-click="loadMorePage()">
+                    <span class="glyphicon glyphicon-triangle-right"></span>
+                </button>
+                ir para:
+                <input type="text" name="ir-para"> mostrar:
+                <select>
+                    <option value="especialidade-todas">todos</option>
+                    <option value="especialidade-todas">nenhum</option>
+                </select>
+                <a class="right" href="url">
+                    <span class="glyphicon">&#xe026;</span> baixar planinha completa
+                </a>
+            </form>
+        </div>
+
+        <div class="col-sm-1"></div>
+    </section>
+
+    <section class="row" id="documentI">
+        <div class="col-sm-1"></div>
+
+        <div class="table-responsive col-sm-10">
+            <table class="table" ng-controller="ResultadoController">
+                <thead>
+                    <tr>
+                        <th ng-repeat="category in category" ng-click="orderByMe(category.name)">{{category.name}}</th>
+                    </tr>
+                </thead>
+                <tbody class="resultados" ng-repeat="tabelas in tabela | orderBy:myOrderBy | limitTo : tamanhoFinal : tamanhoInicial | filter : filtroImput">
+                    <tr>
+                        <th>{{tabelas.posicao}}</th>
+                        <th>{{tabelas.nota}}</th>
+                        <th>{{tabelas.matricula}}</th>
+                        <th>{{tabelas.especialidade}}</th>
+                        <th>{{tabelas.turma}}</th>
+                        <th>{{tabelas.filial}}</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="col-sm-1"></div>
+    </section>
+
+    <script src="js/funcionalidades.js"></script>
+</body>
+
+</html>
